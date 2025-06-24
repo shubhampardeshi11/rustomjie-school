@@ -27,7 +27,7 @@ const Admissions = () => {
     setSuccess('');
     setError('');
     try {
-      await axios.post('/api/admissions', form);
+      await axios.post('http://localhost:5000/api/admissions', form);
       setSuccess('Application submitted successfully!');
       setForm({
         full_name: '', father_name: '', mother_name: '', email: '', phone: '', class_applied: '', city: '', state: '', message: ''

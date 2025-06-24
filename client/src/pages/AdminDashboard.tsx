@@ -24,10 +24,10 @@ const AdminDashboard = () => {
       navigate('/admin/login');
       return;
     }
-    axios.get('/api/admissions', {
+    axios.get('http://localhost:5000/api/admissions', {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then(res => setAdmissions(res.data))
+      .then(res => setAdmissions(res.data.admissions))
       .catch(err => {
         setError('Failed to fetch admissions.');
         if (err.response?.status === 401) {
@@ -42,7 +42,7 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('adminToken');
     if (!token) return navigate('/admin/login');
     try {
-      const res = await axios.get('/api/admissions/pdf', {
+      const res = await axios.get('http://localhost:5000/api/admissions/export/pdf', {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob',
       });
