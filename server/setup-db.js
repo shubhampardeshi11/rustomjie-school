@@ -44,8 +44,9 @@ async function setupDatabase() {
   try {
     // Read and execute the schema file
     const schema = fs.readFileSync(path.join(__dirname, 'db.sql'), 'utf8');
+    await appPool.query('DROP TABLE IF EXISTS admissions, admins;');
     await appPool.query(schema);
-    console.log('Tables created successfully!');
+    console.log('Tables dropped and created successfully!');
   } catch (error) {
     console.error('Error creating tables:', error);
     process.exit(1);

@@ -5,41 +5,123 @@ import PDFDocument from 'pdfkit';
 
 const router = express.Router();
 
+// Utility to convert empty strings to null
+function emptyToNull(obj) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([k, v]) => [k, v === '' ? null : v])
+  );
+}
+
 // Create admission application
 router.post('/', async (req, res) => {
+  const client = await pool.connect();
   try {
+    // Convert all empty strings to null
+    const cleanedBody = emptyToNull(req.body);
     const {
-      full_name,
-      father_name,
-      mother_name,
-      email,
-      phone,
-      class_applied,
-      city,
-      state,
-      message
-    } = req.body;
+      application_no,
+      udise_no,
+      date_of_application,
+      sports,
+      club,
+      admission_class,
+      student_first_name,
+      student_middle_name,
+      student_surname,
+      sex,
+      aadhar_no,
+      birth_date,
+      birth_date_words,
+      residential_address,
+      place_of_birth_city,
+      place_of_birth_state,
+      place_of_birth_country,
+      caste,
+      emergency_contact_name,
+      emergency_contact_mobile,
+      last_school_attended,
+      father_surname,
+      father_first_name,
+      father_qualification,
+      father_profession,
+      father_office_address,
+      father_office_tel,
+      father_email,
+      father_mobile,
+      mother_surname,
+      mother_first_name,
+      mother_qualification,
+      mother_profession,
+      mother_office_address,
+      mother_office_tel,
+      mother_email,
+      mother_mobile,
+      siblings
+    } = cleanedBody;
 
-    // Validation
-    if (!full_name || !father_name || !mother_name || !email || !phone || !class_applied || !city || !state) {
+    console.log('Received admission application:', cleanedBody);
+
+    // Validation (add more as needed)
+    if (!student_first_name || !student_surname || !admission_class || !sex || !birth_date || !emergency_contact_name || !emergency_contact_mobile) {
+      console.log('Validation failed:', { student_first_name, student_surname, admission_class, sex, birth_date, emergency_contact_name, emergency_contact_mobile });
       return res.status(400).json({ error: 'All required fields must be provided' });
     }
 
-    const result = await pool.query(
-      `INSERT INTO admissions 
-       (full_name, father_name, mother_name, email, phone, class_applied, city, state, message) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
-       RETURNING *`,
-      [full_name, father_name, mother_name, email, phone, class_applied, city, state, message]
+    await client.query('BEGIN');
+
+    const result = await client.query(
+      `INSERT INTO admissions (
+        application_no, udise_no, date_of_application, sports, club, admission_class,
+        student_first_name, student_middle_name, student_surname, sex, aadhar_no, birth_date, birth_date_words,
+        residential_address, place_of_birth_city, place_of_birth_state, place_of_birth_country, caste, emergency_contact_name, emergency_contact_mobile, last_school_attended,
+        father_surname, father_first_name, father_qualification, father_profession, father_office_address, father_office_tel, father_email, father_mobile,
+        mother_surname, mother_first_name, mother_qualification, mother_profession, mother_office_address, mother_office_tel, mother_email, mother_mobile,
+        siblings
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6,
+        $7, $8, $9, $10, $11, $12, $13,
+        $14, $15, $16, $17, $18, $19, $20, $21,
+        $22, $23, $24, $25, $26, $27, $28, $29,
+        $30, $31, $32, $33, $34, $35, $36, $37,
+        $38
+      ) RETURNING *`,
+      [
+        application_no, udise_no, date_of_application, sports, club, admission_class,
+        student_first_name, student_middle_name, student_surname, sex, aadhar_no, birth_date, birth_date_words,
+        residential_address, place_of_birth_city, place_of_birth_state, place_of_birth_country, caste, emergency_contact_name, emergency_contact_mobile, last_school_attended,
+        father_surname, father_first_name, father_qualification, father_profession, father_office_address, father_office_tel, father_email, father_mobile,
+        mother_surname, mother_first_name, mother_qualification, mother_profession, mother_office_address, mother_office_tel, mother_email, mother_mobile,
+        siblings
+      ]
     );
+
+    await client.query('COMMIT');
+    console.log('Admission created successfully:', result.rows[0]);
 
     res.status(201).json({
       message: 'Admission application submitted successfully',
       admission: result.rows[0]
     });
   } catch (error) {
-    console.error('Create admission error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    await client.query('ROLLBACK');
+    console.error('Create admission error details:', {
+      message: error.message,
+      stack: error.stack,
+      code: error.code,
+      detail: error.detail
+    });
+    
+    if (error.code === '23505') {  // Unique violation
+      res.status(400).json({ error: 'A record with this information already exists' });
+    } else if (error.code === '23502') {  // Not null violation
+      res.status(400).json({ error: 'Required fields are missing' });
+    } else if (error.code === '42P01') {  // Undefined table
+      res.status(500).json({ error: 'Database table not found. Please ensure the database is properly set up.' });
+    } else {
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  } finally {
+    client.release();
   }
 });
 
@@ -54,8 +136,8 @@ router.get('/', authenticateToken, async (req, res) => {
     let params = [];
 
     if (search) {
-      query += ' WHERE full_name ILIKE $1 OR email ILIKE $1 OR class_applied ILIKE $1';
-      countQuery += ' WHERE full_name ILIKE $1 OR email ILIKE $1 OR class_applied ILIKE $1';
+      query += ' WHERE student_first_name ILIKE $1 OR student_surname ILIKE $1 OR admission_class ILIKE $1';
+      countQuery += ' WHERE student_first_name ILIKE $1 OR student_surname ILIKE $1 OR admission_class ILIKE $1';
       params.push(`%${search}%`);
     }
 
@@ -67,8 +149,14 @@ router.get('/', authenticateToken, async (req, res) => {
       pool.query(countQuery, search ? [search] : [])
     ]);
 
+    // Add computed full_name for each admission
+    const admissions = admissionsResult.rows.map(adm => ({
+      ...adm,
+      full_name: [adm.student_first_name, adm.student_middle_name, adm.student_surname].filter(Boolean).join(' ')
+    }));
+
     res.json({
-      admissions: admissionsResult.rows,
+      admissions,
       total: parseInt(countResult.rows[0].count),
       page: parseInt(page),
       totalPages: Math.ceil(parseInt(countResult.rows[0].count) / limit)
@@ -160,17 +248,14 @@ router.get('/export/pdf', authenticateToken, async (req, res) => {
 
     // Add admissions data
     admissions.forEach((admission, index) => {
-      doc.fontSize(14).text(`${index + 1}. ${admission.full_name}`, { underline: true });
+      const fullName = [admission.student_first_name, admission.student_middle_name, admission.student_surname].filter(Boolean).join(' ');
+      doc.fontSize(14).text(`${index + 1}. ${fullName}`, { underline: true });
       doc.fontSize(10);
-      doc.text(`Father's Name: ${admission.father_name}`);
-      doc.text(`Mother's Name: ${admission.mother_name}`);
-      doc.text(`Email: ${admission.email}`);
-      doc.text(`Phone: ${admission.phone}`);
-      doc.text(`Class Applied: ${admission.class_applied}`);
-      doc.text(`City: ${admission.city}, State: ${admission.state}`);
-      if (admission.message) {
-        doc.text(`Message: ${admission.message}`);
-      }
+      doc.text(`Class: ${admission.admission_class}`);
+      doc.text(`City: ${admission.place_of_birth_city || ''}`);
+      doc.text(`State: ${admission.place_of_birth_state || ''}`);
+      doc.text(`Email: ${admission.father_email || ''}`);
+      doc.text(`Phone: ${admission.father_mobile || ''}`);
       doc.moveDown();
     });
 
