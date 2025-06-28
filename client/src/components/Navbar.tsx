@@ -15,6 +15,7 @@ const Navbar = () => (
           <Link to="/admissions" className="text-gray-700 hover:text-blue-600 transition-colors">Admissions</Link>
           <Link to="/contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</Link>
           <Link to="/admin" className="text-gray-700 hover:text-blue-600 transition-colors font-semibold">Admin</Link>
+          <li><a href="/student/login" className="hover:text-blue-700 font-semibold">Student Login</a></li>
           <button className="ml-2">
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

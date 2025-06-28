@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import AdmissionViewModal from '../components/AdmissionViewModal';
 
 interface Admission {
   id?: number;
@@ -50,6 +51,8 @@ const AdminDashboard = () => {
   const [admissions, setAdmissions] = useState<Admission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedAdmission, setSelectedAdmission] = useState<Admission | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -71,6 +74,16 @@ const AdminDashboard = () => {
       })
       .finally(() => setLoading(false));
   }, [navigate]);
+
+  const handleViewAdmission = (admission: Admission) => {
+    setSelectedAdmission(admission);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedAdmission(null);
+  };
 
   const handleExportPDF = async () => {
     const token = localStorage.getItem('adminToken');
@@ -97,119 +110,110 @@ const AdminDashboard = () => {
     navigate('/admin/login');
   };
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-GB');
+  };
+
   return (
-    <section className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow mt-12" data-aos="fade-up">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-blue-800">Admin Dashboard</h2>
-        <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded shadow transition-all duration-200">Logout</button>
-      </div>
-      <div className="mb-4 flex justify-end">
-        <button onClick={handleExportPDF} className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded shadow transition-all duration-200" data-aos="zoom-in" data-aos-delay="200">
-          Export to PDF
-        </button>
-      </div>
-      {error && <div className="text-red-600 text-center mb-4">{error}</div>}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border rounded-lg">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 border-b">Full Name</th>
-              <th className="px-4 py-2 border-b">Application No.</th>
-              <th className="px-4 py-2 border-b">UDISE No.</th>
-              <th className="px-4 py-2 border-b">Date of Application</th>
-              <th className="px-4 py-2 border-b">Sports</th>
-              <th className="px-4 py-2 border-b">Club</th>
-              <th className="px-4 py-2 border-b">Class</th>
-              <th className="px-4 py-2 border-b">First Name</th>
-              <th className="px-4 py-2 border-b">Middle Name</th>
-              <th className="px-4 py-2 border-b">Surname</th>
-              <th className="px-4 py-2 border-b">Sex</th>
-              <th className="px-4 py-2 border-b">Aadhar No.</th>
-              <th className="px-4 py-2 border-b">Birth Date</th>
-              <th className="px-4 py-2 border-b">Birth Date (Words)</th>
-              <th className="px-4 py-2 border-b">Residential Address</th>
-              <th className="px-4 py-2 border-b">Place of Birth (City)</th>
-              <th className="px-4 py-2 border-b">State</th>
-              <th className="px-4 py-2 border-b">Country</th>
-              <th className="px-4 py-2 border-b">Caste</th>
-              <th className="px-4 py-2 border-b">Emergency Contact Name</th>
-              <th className="px-4 py-2 border-b">Emergency Contact Mobile</th>
-              <th className="px-4 py-2 border-b">Last School Attended</th>
-              <th className="px-4 py-2 border-b">Father Surname</th>
-              <th className="px-4 py-2 border-b">Father First Name</th>
-              <th className="px-4 py-2 border-b">Father Qualification</th>
-              <th className="px-4 py-2 border-b">Father Profession</th>
-              <th className="px-4 py-2 border-b">Father Office Address</th>
-              <th className="px-4 py-2 border-b">Father Office Tel</th>
-              <th className="px-4 py-2 border-b">Father Email</th>
-              <th className="px-4 py-2 border-b">Father Mobile</th>
-              <th className="px-4 py-2 border-b">Mother Surname</th>
-              <th className="px-4 py-2 border-b">Mother First Name</th>
-              <th className="px-4 py-2 border-b">Mother Qualification</th>
-              <th className="px-4 py-2 border-b">Mother Profession</th>
-              <th className="px-4 py-2 border-b">Mother Office Address</th>
-              <th className="px-4 py-2 border-b">Mother Office Tel</th>
-              <th className="px-4 py-2 border-b">Mother Email</th>
-              <th className="px-4 py-2 border-b">Mother Mobile</th>
-              <th className="px-4 py-2 border-b">Siblings</th>
-              <th className="px-4 py-2 border-b">Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={41} className="text-center py-4">Loading...</td></tr>
-            ) : admissions.length === 0 ? (
-              <tr><td colSpan={41} className="text-center py-4">No admissions yet.</td></tr>
-            ) : (
-              admissions.map((a, i) => (
-                <tr key={i}>
-                  <td className="px-4 py-2 border-b">{a.full_name}</td>
-                  <td className="px-4 py-2 border-b">{a.application_no}</td>
-                  <td className="px-4 py-2 border-b">{a.udise_no}</td>
-                  <td className="px-4 py-2 border-b">{a.date_of_application}</td>
-                  <td className="px-4 py-2 border-b">{a.sports}</td>
-                  <td className="px-4 py-2 border-b">{a.club}</td>
-                  <td className="px-4 py-2 border-b">{a.admission_class}</td>
-                  <td className="px-4 py-2 border-b">{a.student_first_name}</td>
-                  <td className="px-4 py-2 border-b">{a.student_middle_name}</td>
-                  <td className="px-4 py-2 border-b">{a.student_surname}</td>
-                  <td className="px-4 py-2 border-b">{a.sex}</td>
-                  <td className="px-4 py-2 border-b">{a.aadhar_no}</td>
-                  <td className="px-4 py-2 border-b">{a.birth_date}</td>
-                  <td className="px-4 py-2 border-b">{a.birth_date_words}</td>
-                  <td className="px-4 py-2 border-b">{a.residential_address}</td>
-                  <td className="px-4 py-2 border-b">{a.place_of_birth_city}</td>
-                  <td className="px-4 py-2 border-b">{a.place_of_birth_state}</td>
-                  <td className="px-4 py-2 border-b">{a.place_of_birth_country}</td>
-                  <td className="px-4 py-2 border-b">{a.caste}</td>
-                  <td className="px-4 py-2 border-b">{a.emergency_contact_name}</td>
-                  <td className="px-4 py-2 border-b">{a.emergency_contact_mobile}</td>
-                  <td className="px-4 py-2 border-b">{a.last_school_attended}</td>
-                  <td className="px-4 py-2 border-b">{a.father_surname}</td>
-                  <td className="px-4 py-2 border-b">{a.father_first_name}</td>
-                  <td className="px-4 py-2 border-b">{a.father_qualification}</td>
-                  <td className="px-4 py-2 border-b">{a.father_profession}</td>
-                  <td className="px-4 py-2 border-b">{a.father_office_address}</td>
-                  <td className="px-4 py-2 border-b">{a.father_office_tel}</td>
-                  <td className="px-4 py-2 border-b">{a.father_email}</td>
-                  <td className="px-4 py-2 border-b">{a.father_mobile}</td>
-                  <td className="px-4 py-2 border-b">{a.mother_surname}</td>
-                  <td className="px-4 py-2 border-b">{a.mother_first_name}</td>
-                  <td className="px-4 py-2 border-b">{a.mother_qualification}</td>
-                  <td className="px-4 py-2 border-b">{a.mother_profession}</td>
-                  <td className="px-4 py-2 border-b">{a.mother_office_address}</td>
-                  <td className="px-4 py-2 border-b">{a.mother_office_tel}</td>
-                  <td className="px-4 py-2 border-b">{a.mother_email}</td>
-                  <td className="px-4 py-2 border-b">{a.mother_mobile}</td>
-                  <td className="px-4 py-2 border-b">{a.siblings}</td>
-                  <td className="px-4 py-2 border-b">{a.created_at}</td>
+    <>
+      <section className="max-w-6xl mx-auto p-8 bg-white rounded-lg shadow mt-12" data-aos="fade-up">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-blue-800">Admin Dashboard</h2>
+          <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded shadow transition-all duration-200">Logout</button>
+        </div>
+        
+        <div className="mb-6 flex justify-between items-center">
+          <div className="text-lg font-semibold text-gray-700">
+            Total Admissions: {admissions.length}
+          </div>
+          <button onClick={handleExportPDF} className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded shadow transition-all duration-200" data-aos="zoom-in" data-aos-delay="200">
+            Export to PDF
+          </button>
+        </div>
+        
+        {error && <div className="text-red-600 text-center mb-4 p-3 bg-red-50 rounded">{error}</div>}
+        
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border rounded-lg">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 border-b text-left text-sm font-semibold text-gray-700">Full Name</th>
+                <th className="px-4 py-3 border-b text-left text-sm font-semibold text-gray-700">Application No.</th>
+                <th className="px-4 py-3 border-b text-left text-sm font-semibold text-gray-700">Class</th>
+                <th className="px-4 py-3 border-b text-left text-sm font-semibold text-gray-700">Date Applied</th>
+                <th className="px-4 py-3 border-b text-left text-sm font-semibold text-gray-700">Contact</th>
+                <th className="px-4 py-3 border-b text-left text-sm font-semibold text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-8">
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                      <span className="ml-2">Loading admissions...</span>
+                    </div>
+                  </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-    </section>
+              ) : admissions.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-8 text-gray-500">
+                    No admissions found.
+                  </td>
+                </tr>
+              ) : (
+                admissions.map((admission, index) => (
+                  <tr key={admission.id || index} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 border-b">
+                      <div className="font-medium text-gray-900">{admission.full_name}</div>
+                      <div className="text-sm text-gray-500">{admission.sex}</div>
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      <div className="font-medium">{admission.application_no || 'N/A'}</div>
+                      <div className="text-sm text-gray-500">UDISE: {admission.udise_no || 'N/A'}</div>
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {admission.admission_class}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 border-b text-sm text-gray-600">
+                      {formatDate(admission.date_of_application)}
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      <div className="text-sm">
+                        <div className="font-medium">{admission.emergency_contact_name}</div>
+                        <div className="text-gray-500">{admission.emergency_contact_mobile}</div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      <button
+                        onClick={() => handleViewAdmission(admission)}
+                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                      >
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Admission View Modal */}
+      <AdmissionViewModal
+        admission={selectedAdmission}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
+    </>
   );
 };
 

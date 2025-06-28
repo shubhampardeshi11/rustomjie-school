@@ -9,6 +9,8 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import Academics from './pages/Academics';
 import Contact from './pages/Contact';
+import StudentLogin from './pages/StudentLogin';
+import StudentSignup from './pages/StudentSignup';
 
 const App = () => (
   <div className="flex flex-col min-h-screen">
@@ -22,6 +24,8 @@ const App = () => (
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/student/login" element={<StudentLogin />} />
+        <Route path="/student/signup" element={<StudentSignup />} />
       </Routes>
     </main>
     <Footer />

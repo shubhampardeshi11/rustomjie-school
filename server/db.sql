@@ -51,4 +51,21 @@ CREATE TABLE IF NOT EXISTS admissions (
 
   siblings TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Students table
+CREATE TABLE IF NOT EXISTS students (
+  id SERIAL PRIMARY KEY,
+  full_name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  dob DATE NOT NULL,
+  gender VARCHAR(20) NOT NULL,
+  student_id VARCHAR(100),
+  address TEXT NOT NULL,
+  city VARCHAR(100) NOT NULL,
+  state VARCHAR(100) NOT NULL,
+  zip VARCHAR(20) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ); 

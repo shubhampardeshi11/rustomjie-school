@@ -2,6 +2,7 @@ import express from 'express';
 import pool from '../db.js';
 import { authenticateToken } from '../middleware/auth.js';
 import PDFDocument from 'pdfkit';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
@@ -262,6 +263,44 @@ router.get('/export/pdf', authenticateToken, async (req, res) => {
     doc.end();
   } catch (error) {
     console.error('PDF export error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Student login endpoint
+router.post('/student/login', async (req, res) => {
+  const { student_id, password } = req.body;
+  if (!student_id || !password) {
+    return res.status(400).json({ error: 'Student ID and password are required' });
+  }
+  try {
+    const result = await pool.query('SELECT * FROM admissions WHERE application_no = $1', [student_id]);
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const student = result.rows[0];
+    // For now, password is birth_date in YYYY-MM-DD
+    if (student.birth_date && student.birth_date.toISOString().slice(0, 10) === password) {
+      const token = jwt.sign(
+        { id: student.id, application_no: student.application_no },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '24h' }
+      );
+      return res.json({
+        message: 'Login successful',
+        token,
+        student: {
+          id: student.id,
+          application_no: student.application_no,
+          full_name: [student.student_first_name, student.student_middle_name, student.student_surname].filter(Boolean).join(' '),
+          admission_class: student.admission_class
+        }
+      });
+    } else {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+  } catch (error) {
+    console.error('Student login error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
