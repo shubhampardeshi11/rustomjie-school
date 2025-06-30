@@ -57,7 +57,14 @@ router.post('/', async (req, res) => {
       mother_office_tel,
       mother_email,
       mother_mobile,
-      siblings
+      siblings,
+      health_info,
+      doctor_name_mobile,
+      bus_facility,
+      bus_stop,
+      agreement_accepted,
+      mother_signature,
+      father_signature
     } = cleanedBody;
 
     console.log('Received admission application:', cleanedBody);
@@ -77,14 +84,14 @@ router.post('/', async (req, res) => {
         residential_address, place_of_birth_city, place_of_birth_state, place_of_birth_country, caste, emergency_contact_name, emergency_contact_mobile, last_school_attended,
         father_surname, father_first_name, father_qualification, father_profession, father_office_address, father_office_tel, father_email, father_mobile,
         mother_surname, mother_first_name, mother_qualification, mother_profession, mother_office_address, mother_office_tel, mother_email, mother_mobile,
-        siblings
+        siblings, health_info, doctor_name_mobile, bus_facility, bus_stop, agreement_accepted, mother_signature, father_signature
       ) VALUES (
         $1, $2, $3, $4, $5, $6,
         $7, $8, $9, $10, $11, $12, $13,
         $14, $15, $16, $17, $18, $19, $20, $21,
         $22, $23, $24, $25, $26, $27, $28, $29,
         $30, $31, $32, $33, $34, $35, $36, $37,
-        $38
+        $38, $39, $40, $41, $42, $43, $44, $45
       ) RETURNING *`,
       [
         application_no, udise_no, date_of_application, sports, club, admission_class,
@@ -92,7 +99,7 @@ router.post('/', async (req, res) => {
         residential_address, place_of_birth_city, place_of_birth_state, place_of_birth_country, caste, emergency_contact_name, emergency_contact_mobile, last_school_attended,
         father_surname, father_first_name, father_qualification, father_profession, father_office_address, father_office_tel, father_email, father_mobile,
         mother_surname, mother_first_name, mother_qualification, mother_profession, mother_office_address, mother_office_tel, mother_email, mother_mobile,
-        siblings
+        siblings, health_info, doctor_name_mobile, bus_facility, bus_stop, agreement_accepted, mother_signature, father_signature
       ]
     );
 

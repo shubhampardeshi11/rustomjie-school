@@ -42,6 +42,13 @@ interface Admission {
   siblings: string;
   created_at: string;
   full_name: string;
+  health_info: string;
+  doctor_name_mobile: string;
+  bus_facility: string;
+  bus_stop: string;
+  agreement_accepted: boolean;
+  mother_signature: string;
+  father_signature: string;
 }
 
 interface AdmissionViewModalProps {
@@ -273,6 +280,43 @@ const AdmissionViewModal: React.FC<AdmissionViewModalProps> = ({ admission, isOp
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Siblings Details</label>
               <div className="p-3 bg-gray-50 border rounded-lg">{admission.siblings || 'N/A'}</div>
+            </div>
+          </div>
+
+          {/* Annexure B */}
+          <div className="border-t pt-4">
+            <h3 className="font-semibold text-lg mb-4 text-blue-600">Annexure B</h3>
+            <div className="mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Health Information</label>
+              <div className="p-3 bg-gray-50 border rounded-lg">{admission.health_info || 'N/A'}</div>
+            </div>
+            <div className="mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Doctor/Family Doctor Name & Mobile</label>
+              <div className="p-3 bg-gray-50 border rounded-lg">{admission.doctor_name_mobile || 'N/A'}</div>
+            </div>
+            <div className="mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Bus Facility</label>
+              <div className="p-3 bg-gray-50 border rounded-lg">{admission.bus_facility || 'N/A'}</div>
+            </div>
+            {admission.bus_facility === 'Yes' && (
+              <div className="mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bus Stop / Locality</label>
+                <div className="p-3 bg-gray-50 border rounded-lg">{admission.bus_stop || 'N/A'}</div>
+              </div>
+            )}
+            <div className="mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Agreement Accepted</label>
+              <div className="p-3 bg-gray-50 border rounded-lg">{admission.agreement_accepted ? 'Yes' : 'No'}</div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mother's Signature</label>
+                <div className="p-3 bg-gray-50 border rounded-lg">{admission.mother_signature || 'N/A'}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Father's Signature</label>
+                <div className="p-3 bg-gray-50 border rounded-lg">{admission.father_signature || 'N/A'}</div>
+              </div>
             </div>
           </div>
 

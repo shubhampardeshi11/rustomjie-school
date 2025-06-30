@@ -41,6 +41,13 @@ const initialForm = {
   mother_email: '',
   mother_mobile: '',
   siblings: '',
+  health_info: '',
+  doctor_name_mobile: '',
+  bus_facility: '',
+  bus_stop: '',
+  agreement_accepted: false,
+  mother_signature: '',
+  father_signature: '',
 };
 
 const initialErrors = Object.fromEntries(Object.keys(initialForm).map(k => [k, '']));
@@ -85,6 +92,27 @@ const Admissions = () => {
       case 'caste':
         if (["SC", "OBC", "ST", "NT"].includes(form.caste.trim().toUpperCase()) && !value)
           return 'Caste required for reserved category';
+        break;
+      case 'health_info':
+        if (!value) return 'Required';
+        break;
+      case 'doctor_name_mobile':
+        if (!value) return 'Required';
+        break;
+      case 'bus_facility':
+        if (!value) return 'Required';
+        break;
+      case 'bus_stop':
+        if (form.bus_facility === 'Yes' && !value) return 'Required if bus facility is Yes';
+        break;
+      case 'agreement_accepted':
+        if (!form.agreement_accepted) return 'You must accept the agreement';
+        break;
+      case 'mother_signature':
+        if (!value) return 'Required';
+        break;
+      case 'father_signature':
+        if (!value) return 'Required';
         break;
       default:
         break;
@@ -298,6 +326,58 @@ const Admissions = () => {
           <h3 className="font-semibold text-lg mb-2">C. Siblings</h3>
           <input name="siblings" value={form.siblings} onChange={handleChange} onBlur={handleBlur} placeholder="Siblings (if any studying in Rustomjie International)" className="input input-bordered w-full" />
           {formErrors.siblings && <div className="text-red-500 text-xs">{formErrors.siblings}</div>}
+        </div>
+        {/* D. Health Information (Annexure B) */}
+        <div className="border-t pt-4">
+          <h3 className="font-semibold text-lg mb-2">D. Health Information (Annexure B)</h3>
+          <textarea name="health_info" value={form.health_info} onChange={handleChange} onBlur={handleBlur} placeholder="Please provide any information concerning the child's health, which the school should know." className="input input-bordered w-full" />
+          {formErrors.health_info && <div className="text-red-500 text-xs">{formErrors.health_info}</div>}
+          <input name="doctor_name_mobile" value={form.doctor_name_mobile} onChange={handleChange} onBlur={handleBlur} placeholder="Name & mobile no. of doctor/family doctor for emergency" className="input input-bordered w-full mt-2" />
+          {formErrors.doctor_name_mobile && <div className="text-red-500 text-xs">{formErrors.doctor_name_mobile}</div>}
+        </div>
+        {/* E. Bus Facility (Annexure B) */}
+        <div className="border-t pt-4">
+          <h3 className="font-semibold text-lg mb-2">E. Bus Facility (Annexure B)</h3>
+          <div className="flex gap-4 items-center">
+            <label className="font-medium">Would your child be using bus facility?</label>
+            <label className="flex items-center gap-1"><input type="radio" name="bus_facility" value="Yes" checked={form.bus_facility === 'Yes'} onChange={handleChange} /> Yes</label>
+            <label className="flex items-center gap-1"><input type="radio" name="bus_facility" value="No" checked={form.bus_facility === 'No'} onChange={handleChange} /> No</label>
+          </div>
+          {formErrors.bus_facility && <div className="text-red-500 text-xs">{formErrors.bus_facility}</div>}
+          {form.bus_facility === 'Yes' && (
+            <input name="bus_stop" value={form.bus_stop} onChange={handleChange} onBlur={handleBlur} placeholder="If Yes, name of stop / locality" className="input input-bordered w-full mt-2" />
+          )}
+          {formErrors.bus_stop && <div className="text-red-500 text-xs">{formErrors.bus_stop}</div>}
+        </div>
+        {/* Agreement (Annexure B) */}
+        <div className="border-t pt-4">
+          <h3 className="font-semibold text-lg mb-2">Agreement (Annexure B)</h3>
+          <div className="max-h-40 overflow-y-auto bg-gray-50 p-3 rounded border text-xs mb-2">
+            <ul className="list-disc pl-5">
+              <li>I agree to abide by the school rules and policies, and ensure my child does the same.</li>
+              <li>I understand the school is not responsible for accidents or unforeseen incidents.</li>
+              <li>I will pay all fees and charges as required by the school.</li>
+              <li>I authorize the school to take necessary action in case of emergency.</li>
+              <li>I grant permission for my child's photos or work to be used for school purposes.</li>
+              <li>I agree to the school's terms for bus facility and other services.</li>
+              <li>I confirm the information provided is true and correct to the best of my knowledge.</li>
+            </ul>
+          </div>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="agreement_accepted" checked={form.agreement_accepted} onChange={e => setForm({ ...form, agreement_accepted: e.target.checked })} />
+            I have read and agree to the above terms and conditions.
+          </label>
+          {formErrors.agreement_accepted && <div className="text-red-500 text-xs">{formErrors.agreement_accepted}</div>}
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <input name="mother_signature" value={form.mother_signature} onChange={handleChange} onBlur={handleBlur} placeholder="Mother's Signature (type name)" className="input input-bordered w-full" />
+              {formErrors.mother_signature && <div className="text-red-500 text-xs">{formErrors.mother_signature}</div>}
+            </div>
+            <div>
+              <input name="father_signature" value={form.father_signature} onChange={handleChange} onBlur={handleBlur} placeholder="Father's Signature (type name)" className="input input-bordered w-full" />
+              {formErrors.father_signature && <div className="text-red-500 text-xs">{formErrors.father_signature}</div>}
+            </div>
+          </div>
         </div>
         <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow transition-all duration-200 disabled:opacity-60" data-aos="zoom-in" data-aos-delay="200">
           {loading ? 'Submitting...' : 'Submit Application'}

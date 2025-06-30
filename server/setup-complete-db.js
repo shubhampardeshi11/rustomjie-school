@@ -57,6 +57,13 @@ const setupCompleteDatabase = async () => {
         mother_email VARCHAR(255),
         mother_mobile VARCHAR(20),
         siblings TEXT,
+        health_info TEXT,
+        doctor_name_mobile VARCHAR(100),
+        bus_facility VARCHAR(10),
+        bus_stop VARCHAR(100),
+        agreement_accepted BOOLEAN,
+        mother_signature VARCHAR(100),
+        father_signature VARCHAR(100),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
