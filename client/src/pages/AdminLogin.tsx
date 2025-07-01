@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +16,7 @@ const AdminLogin = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('http://localhost:5001/api/admin/login', { email, password });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/login`, { email, password });
       if (res.data.token) {
         localStorage.setItem('adminToken', res.data.token);
         localStorage.setItem('adminData', JSON.stringify(res.data.admin));

@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -61,7 +63,7 @@ const AdminDashboard = () => {
       navigate('/admin/login');
       return;
     }
-    axios.get('http://localhost:5001/api/admissions', {
+    axios.get(`${import.meta.env.VITE_API_URL}/api/admissions`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setAdmissions(res.data.admissions))
@@ -89,7 +91,7 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('adminToken');
     if (!token) return navigate('/admin/login');
     try {
-      const res = await axios.get('http://localhost:5001/api/admissions/export/pdf', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/admissions/export/pdf`, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob',
       });
@@ -209,7 +211,7 @@ const AdminDashboard = () => {
 
       {/* Admission View Modal */}
       <AdmissionViewModal
-        admission={selectedAdmission}
+        admission={selectedAdmission as any} // Type assertion to bypass type mismatch temporarily
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />

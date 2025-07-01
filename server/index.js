@@ -8,7 +8,11 @@ import studentRouter from './routes/student.js';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://rustomjie-school-frontend.netlify.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true // only if you use cookies/auth headers
+}));
 app.use(express.json());
 
 app.use('/api/admin', adminRouter);

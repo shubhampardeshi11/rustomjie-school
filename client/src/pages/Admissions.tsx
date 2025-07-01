@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -151,7 +152,7 @@ const Admissions = () => {
     }
     setLoading(true);
     try {
-      await axios.post('http://localhost:5001/api/admissions', form);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/admissions`, form);
       setSuccess('Application submitted successfully!');
       setForm(initialForm);
       setFormErrors(initialErrors);
@@ -168,7 +169,7 @@ const Admissions = () => {
       navigate('/admin/login');
       return;
     }
-    axios.get('http://localhost:5001/api/admissions', {
+    axios.get(`${import.meta.env.VITE_API_URL}/api/admissions`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setAdmissions(res.data.admissions))

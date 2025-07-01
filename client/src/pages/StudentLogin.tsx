@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -16,7 +18,7 @@ const StudentLogin = () => {
     setLoading(true);
     
     try {
-      const res = await axios.post('http://localhost:5001/api/students/login', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/students/login`, {
         email,
         password
       });

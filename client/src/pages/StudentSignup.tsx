@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -73,7 +75,7 @@ const StudentSignup = () => {
         password: form.password
       };
 
-      const response = await axios.post('http://localhost:5001/api/students/signup', signupData);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/students/signup`, signupData);
       
       setSuccess('Registration successful! You can now login with your email and password.');
       
@@ -96,7 +98,7 @@ const StudentSignup = () => {
       
       // Redirect to login page after 2 seconds
       setTimeout(() => {
-        window.location.href = '/ student/login';
+        window.location.href = '/student/login';
       }, 2000);
       
     } catch (err: any) {
