@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import adminRouter from './routes/admin.js';
 import admissionsRouter from './routes/admissions.js';
 import studentRouter from './routes/student.js';
+import newsletterRouter from './routes/newsletter.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use('/api/admin', adminRouter);
 app.use('/api/admissions', admissionsRouter);
 app.use('/api/students', studentRouter);
+app.use('/api/newsletter', newsletterRouter);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
