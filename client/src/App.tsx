@@ -11,6 +11,7 @@ import Academics from './pages/Academics';
 import Contact from './pages/Contact';
 import StudentLogin from './pages/StudentLogin';
 import StudentSignup from './pages/StudentSignup';
+import NewsEvents from './pages/NewsEvents';
 
 const App = () => (
   <div className="flex flex-col min-h-screen">
@@ -26,6 +27,7 @@ const App = () => (
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/student/login" element={<StudentLogin />} />
         <Route path="/student/signup" element={<StudentSignup />} />
+        <Route path="/news-events" element={<NewsEvents />} />
       </Routes>
     </main>
     <Footer />

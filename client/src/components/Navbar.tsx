@@ -13,6 +13,7 @@ const Navbar = () => (
           <Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors">About Us</Link>
           <Link to="/academics" className="text-gray-700 hover:text-blue-600 transition-colors">Academics</Link>
           <Link to="/admissions" className="text-gray-700 hover:text-blue-600 transition-colors">Admissions</Link>
+          <Link to="/news-events" className="text-gray-700 hover:text-blue-600 transition-colors">News & Events</Link>
           <Link to="/contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</Link>
           <Link to="/admin" className="text-gray-700 hover:text-blue-600 transition-colors font-semibold">Admin</Link>
           <li><a href="/student/login" className="hover:text-blue-700 font-semibold">Student Login</a></li>
