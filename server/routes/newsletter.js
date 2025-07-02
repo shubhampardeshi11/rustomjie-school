@@ -1,5 +1,5 @@
-const express = require('express');
-const nodemailer = require('nodemailer');
+import express from 'express';
+import nodemailer from 'nodemailer';
 const router = express.Router();
 
 const EMAIL_USER = process.env.NEWSLETTER_EMAIL_USER;
